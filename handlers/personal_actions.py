@@ -38,14 +38,17 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler(content_types=[ContentType.VOICE])
 async def voice_message_handler(message: types.Message):
-    voice = await bot.get_file(message.voice.file_id)
-    sound = shazam_voice(voice.file_path)
 
-    if sound['result'] is None:
-        await message.reply(f"{message.chat.first_name}, мне не удалось найти ")
-    else:
-        if(BotDB.user_exists(message.from_user.id)):
-            spotify_btn = InlineKeyboardButton('Spotify 💚', url=sound['result']['spotify']['external_urls']['spotify'])
+    if(BotDB.user_exists(message.from_user.id)):
+        
+        voice = await bot.get_file(message.voice.file_id)
+        sound = shazam_voice(voice.file_path)
+
+        if sound['result'] is None:
+            await message.reply(f"{message.chat.first_name.title()}, запиши еще раз и по дольше.")
+        else:
+            spotify_url = sound['result']['spotify']['external_urls']['spotify']
+            spotify_btn = InlineKeyboardButton('Spotify 💚', url=spotify_url)
             # apple_btn = InlineKeyboardButton('Apple Music 🖤', url=sound['result']['apple_music']['previews']['url'])
             inline_kb1 = InlineKeyboardMarkup().add(spotify_btn)
             
@@ -53,6 +56,5 @@ async def voice_message_handler(message: types.Message):
                 f""" \
                 {sound['result']['title'].strip()} by #{sound['result']['artist'].replace(' ', '_').strip().replace(',', '')}
                 """, reply_markup=inline_kb1)
-        else:
-            await message.answer(
-                f"Вы не зарегистрировались! Нажмите /start для регистрации", reply_markup=None)
+    else:
+        await message.answer(f"Вы не зарегистрировались! Нажмите /start для регистрации", reply_markup=None)
