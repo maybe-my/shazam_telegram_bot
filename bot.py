@@ -38,10 +38,12 @@ async def voice_message_handler(message: types.Message):
         await message.reply(f"{message.chat.first_name}, мне не удалось найти ")
     else:
         spotify_btn = InlineKeyboardButton('Spotify 💚', url=sound['result']['spotify']['external_urls']['spotify'])
+        # apple_btn = InlineKeyboardButton('Apple Music 🖤', url=sound['result']['apple_music']['previews']['url'])
         inline_kb1 = InlineKeyboardMarkup().add(spotify_btn)
+        
         await message.answer(
             f""" \
-            {sound['result']['title'].strip()} от #{sound['result']['artist'].replace(' ', '_').strip()}
+            {sound['result']['title'].strip()} by #{sound['result']['artist'].replace(' ', '_').strip().replace(',', '')}
             """, reply_markup=inline_kb1)
 
 
