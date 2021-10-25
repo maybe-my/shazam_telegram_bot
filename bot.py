@@ -6,19 +6,28 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
+
+from database.db import BotDB
+
+
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
 bot = Bot(token=config.BOT_TOKEN)
 dp = Dispatcher(bot)
 
+BotDB = BotDB('users.db')
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
     """
     Знакомство с ботом `/start`
     """
-    await message.reply("Хелоу 🙈 \nНайду песню по звуковом сообщение 🔍")
+    # print(message.from_user.id)
+    if(not BotDB.user_exists(message.from_user.id)):
+        BotDB.add_user(message.from_user.id)
+
+    await message.reply("Хелоу 🙈 \nНайду песню по звуковом сообщение за 3 секунды 🔍")
 
 
 @dp.message_handler(commands=['help'])
