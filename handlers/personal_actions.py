@@ -10,24 +10,30 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 
-@dp.message_handler(commands=['start'])
+import datetime
+
+
+@dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
     Знакомство с ботом `/start`
     """
-    # print(message.from_user.id)
+
     if(not BotDB.user_exists(message.from_user.id)):
-        BotDB.add_user(message.from_user.id)
+        BotDB.add_user(message.from_user.id, message.from_user.username)
+    opts = { "hey" : ('Привет', 'Здравствуйте', 'Доброе утро', 'Добрый день', 'Добрый вечер', 'Доброй ночи')}
 
-    await message.answer("Хелоу 🙈 \nНайду песню по звуковом сообщение за 3 секунды 🔍")
+    now = datetime.datetime.now()
+    if now.hour > 4 and now.hour <= 12 :
+        greet = opts["hey"][2]
+    if now.hour > 12 and now.hour <= 16 :
+        greet = opts["hey"][3]
+    if now.hour > 16 and now.hour <= 24 :
+        greet = opts["hey"][4]
+    if now.hour >= 0 and now.hour <= 4 :
+        greet = opts["hey"][5]
 
-
-@dp.message_handler(commands=['help'])
-async def send_help(message: types.Message):
-    """
-    помощ юзеру `/help`
-    """
-    await message.answer("""Отправь мне голосовое сообщение с песней (мин 3 секунды) 🔍""")
+    await message.answer(f"{greet}, Отправь мне голосовое сообщение с песней (мин 3 секунды) 🔍")
 
 
 @dp.message_handler(content_types=[ContentType.VOICE])

@@ -16,9 +16,9 @@ class BotDB:
         result = self.cursor.execute("SELECT `id` FROM `users` WHERE `telegram_id` = ?", (user_id,))
         return result.fetchone()[0]
 
-    def add_user(self, user_id):
+    def add_user(self, user_id, username):
         """Добавляем юзера в базу"""
-        self.cursor.execute("INSERT INTO `users` (`telegram_id`) VALUES (?)", (user_id,))
+        self.cursor.execute("INSERT INTO `users` (`telegram_id`, `username`) VALUES (?,?)", (user_id,'@' + username,))
         return self.conn.commit()
 
     def add_record(self, user_id, operation, value):
